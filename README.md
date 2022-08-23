@@ -1,1 +1,1 @@
-## Repository for cource MLOps from Otus
+## Repository for course MLOps from Otus
