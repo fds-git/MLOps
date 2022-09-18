@@ -155,10 +155,12 @@ def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, sta
 
 
 (customer_profiles_table, terminal_profiles_table, transactions_df)=\
-    generate_dataset(n_customers = 5000, 
-                     n_terminals = 1000, 
+    generate_dataset(n_customers = 500, 
+                     n_terminals = 100, 
                      nb_days=183, 
                      start_date="2018-04-01", 
                      r=5)
 
-transactions_df.to_csv('dataframe.csv', index=False)
+transactions_df['TX_DATETIME'] = transactions_df['TX_DATETIME'].astype(str)
+
+transactions_df.to_csv('dataframe.csv', sep=',', index=False)
