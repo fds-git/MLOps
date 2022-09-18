@@ -161,4 +161,4 @@ def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, sta
                      start_date="2018-04-01", 
                      r=5)
 
-transactions_df.to_csv('dataframe.csv')
+transactions_df.to_csv('dataframe.csv', index=False)

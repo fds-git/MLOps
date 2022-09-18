@@ -1,0 +1,20 @@
+mysql
+CREATE DATABASE mydb;
+SHOW DATABASES;
+USE mydb
+CREATE TABLE transactions ( TRANSACTION_ID INT PRIMARY KEY, TX_DATETIME VARCHAR(50), CUSTOMER_ID INT, TERMINAL_ID INT, TX_AMOUNT FLOAT, TX_TIME_SECONDS INT, TX_TIME_DAYS INT );
+SHOW TABLES;
+SHOW GLOBAL VARIABLES LIKE 'PORT';
+
+SHOW VARIABLES LIKE "secure_file_priv"; # Проверка режима работы
+
+cp /home/dima/MLOps/scripts/dataframe.csv /var/lib/mysql-files/
+
+LOAD DATA INFILE '/home/dima/MLOps/scripts/dataframe.csv'
+ INTO TABLE transactions
+ FIELDS TERMINATED BY ','
+ ENCLOSED BY '"'
+ LINES TERMINATED BY '\n'
+ IGNORE 1 ROWS;
+
+LOAD DATA INFILE '/var/lib/mysql-files/dataframe.csv'  INTO TABLE transactions  FIELDS TERMINATED BY ','  ENCLOSED BY '"'  LINES TERMINATED BY '\n'  IGNORE 1 ROWS;
