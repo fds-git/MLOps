@@ -1,6 +1,15 @@
 ssh dima@51.250.21.57
 git clone https://github.com/fds-git/MLOps.git
-python3 MLOps/scripts/create_data.py 
+
+sudo apt install python3-pip
+pip install numpy
+pip install pandas
+python3 MLOps/scripts/create_data.py
+
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql.service
+
 sudo cp /home/dima/MLOps/scripts/dataframe.csv /var/lib/mysql-files/  (mysql может загружать данные scv только из этой директории)
 sudo mysql
 CREATE DATABASE mydb;
