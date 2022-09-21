@@ -1,4 +1,8 @@
-mysql
+ssh dima@51.250.21.57
+git clone https://github.com/fds-git/MLOps.git
+python3 MLOps/scripts/create_data.py 
+sudo cp /home/dima/MLOps/scripts/dataframe.csv /var/lib/mysql-files/  (mysql может загружать данные scv только из этой директории)
+sudo mysql
 CREATE DATABASE mydb;
 SHOW DATABASES;
 USE mydb
@@ -7,14 +11,6 @@ SHOW TABLES;
 SHOW GLOBAL VARIABLES LIKE 'PORT';
 
 SHOW VARIABLES LIKE "secure_file_priv"; # Проверка режима работы
-
-cp /home/dima/MLOps/scripts/dataframe.csv /var/lib/mysql-files/
-
-LOAD DATA INFILE '/home/dima/MLOps/scripts/dataframe.csv'
- INTO TABLE transactions
- FIELDS TERMINATED BY ','
- ENCLOSED BY '"'
- LINES TERMINATED BY '\n'
- IGNORE 1 ROWS;
-
 LOAD DATA INFILE '/var/lib/mysql-files/dataframe.csv'  INTO TABLE transactions  FIELDS TERMINATED BY ','  ENCLOSED BY '"'  LINES TERMINATED BY '\n'  IGNORE 1 ROWS;
+
+select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='transactions';
