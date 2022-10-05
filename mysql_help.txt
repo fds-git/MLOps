@@ -26,6 +26,16 @@ LOAD DATA INFILE '/var/lib/mysql-files/dataframe.csv'  INTO TABLE transactions  
 
 select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='transactions';
 
+#создаем пользователя (будет иметь доступ к базе с любого хоста) и задаем пароль
+CREATE USER 'dima'@'%' IDENTIFIED BY 'imsdvgiw';
+#даем пользователю все права ко всем таблицам данной базы
+GRANT ALL PRIVILEGES ON mydb.* TO 'dima'@'%';
+# применяем новые права (чтобы не делать restart)
+FLUSH PRIVILEGES;
+
+#Вывести пользователей и хосты для доступа
+SELECT user,host FROM mysql.user;
+
 # Создать кластер в той же подсети и с той же группой безопасности, что и виртуалка.
 # Группа безопасности должна обеспечивать выход в интернет
 
