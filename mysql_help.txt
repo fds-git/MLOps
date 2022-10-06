@@ -33,6 +33,9 @@ GRANT ALL PRIVILEGES ON mydb.* TO 'dima'@'%';
 # применяем новые права (чтобы не делать restart)
 FLUSH PRIVILEGES;
 
+# Файерволу разрешаем подключение с любого айпи к порту, где висит MySQL
+sudo ufw allow 3306
+
 #Вывести пользователей и хосты для доступа
 SELECT user,host FROM mysql.user;
 
