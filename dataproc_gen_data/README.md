@@ -21,23 +21,27 @@ TCP			80				CIDR					0.0.0.0/0 	—
 
 		ssh ubuntu@51.250.21.57
 
-4) Склонировать репозиторий, содержащий необходимый скрипт
+4) Установить Git
+
+		sudo apt update
+		sudo apt install git
+
+5) Склонировать репозиторий, содержащий необходимый скрипт
 
 		git clone https://github.com/fds-git/MLOps.git
 
-5) Установить необходимые библиотеки и запустить скрипт
+6) Установить необходимые библиотеки и запустить скрипт
 
-		sudo apt update
 		sudo apt install python3-pip
 		pip install numpy
 		pip install pandas
 		python3 MLOps/dataproc_gen_data/create_data.py
 
-6) Сохранить сгенерированные данные в распределенную файловую систему
+7) Сохранить сгенерированные данные в распределенную файловую систему
 
 		hdfs dfs -mkdir /user/testdata
 		hdfs dfs -copyFromLocal dataframe.csv /user/testdata/dataframe.csv
 
-7) Выполнить проверку результата сохранения
+8) Выполнить проверку результата сохранения
 
 		hdfs dfs -ls /user/testdata
