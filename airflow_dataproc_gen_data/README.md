@@ -31,7 +31,7 @@ TCP			80				CIDR					0.0.0.0/0 	—
 
 	Сохраняем изменения и перезапускаем виртуальную машину
 
-5) Генерирует SSH ключи
+5) Генерируем SSH ключи
 	
 		ssh-keygen
 
@@ -59,13 +59,29 @@ TCP			80				CIDR					0.0.0.0/0 	—
 		sudo apt install python3-pip
 		pip install numpy
 		pip install pandas
+
+Далее AIRFLOW
+
+x) Устанавливаем провайдер
+sudo apt install python3-pip
+pip install apache-airflow-providers-ssh
+y) проверяем, что провайдер установился
+airflow providers list
 		
 13) Создаем новый DAG
 
 		cd /home/airflow/dags/
 		sudo nano run_generate_script.py
 
-	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_gen_data/ в только что созданный run_generate_script.py и сохраняем изменения
+	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_gen_data/for_airflow в только что созданный run_generate_script.py и сохраняем изменения
+
+15) Подключиться к AirFlow через web-интерфейс
+
+		http://51.250.23.122:80/
+
+	Здесь должны увидеть новый DAG с dag_id = mks_geo
+
+16) Запускаем переключателем DAG. Через некоторое время можем увидеть выполненные экземпляры DAG'a, в логах будут храниться результаты запросов к сервису.
 
 13) Сохранить сгенерированные данные в распределенную файловую систему
 
@@ -76,15 +92,3 @@ TCP			80				CIDR					0.0.0.0/0 	—
 14) Выполнить проверку результата сохранения
 
 		hdfs dfs -ls /user/testdata
-
-
-15) Подключиться к AirFlow через web-интерфейс
-
-		http://51.250.23.122:80/
-
-	Здесь должны увидеть новый DAG с dag_id = mks_geo
-
-16) Запускаем переключателем DAG. Через некоторое время можем увидеть выполненные экземпляры DAG'a, в логах будут храниться результаты запросов к сервису.
-
-17) Заменив PythonOperator, например, на PostgresOperator можем сохранять результаты запросов в базу данных.
-
