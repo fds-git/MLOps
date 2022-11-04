@@ -173,6 +173,6 @@ if __name__ == "__main__":
 
     #min_dt = transactions_df['TX_DATETIME'].min().strftime("%d_%m_%Y_%H:%M:%S")
     #max_dt = transactions_df['TX_DATETIME'].max().strftime("%d_%m_%Y_%H:%M:%S")
-    min_dt = transactions_df['TX_DATETIME'].min().strftime("%d_%m_%Y_%H")
-    max_dt = transactions_df['TX_DATETIME'].max().strftime("%d_%m_%Y_%H")
+    min_dt = transactions_df['TX_DATETIME'].min().strftime("%d_%m_%Y")
+    max_dt = transactions_df['TX_DATETIME'].max().strftime("%d_%m_%Y")
     transactions_df.to_parquet(f'./transactions_{min_dt}-{max_dt}.parquet')
