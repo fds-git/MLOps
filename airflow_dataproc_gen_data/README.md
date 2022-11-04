@@ -37,62 +37,57 @@
 	
 		ssh-keygen
 
+6) Переносим приватный ключ на директорию выше и присваиваем полный доступ (чтобы AirFlow мог его считать)
+
+		cp .ssh/id_rsa ./
+		sudo chmod 777 id_rsa
+
 6) Копируем содержимое открытого ключа (он необходим при создании кластера Data Proc)
 
 		cd .ssh
 		cat id_rsa.pub
 	Выделяем ключ и ctrl+shift+c
 
-7) Создать кластер Data Proc
-8) При создании группа безопасности должна иметь такие же настройки, как и ВМ с AirFlow
-9) В качестве SSH ключа использовать открытый ключ ВМ с AirFlow (можно также добавить SSH своего ПК и открыть IP мастерноды внешнему миру, но это не рекомендуется)
-10) Подключиться к датаноде из консоли AirFlow можно по внутреннему адресу, можно по внешнему, если внешний ip был разрешен при создании кластера
+7) Создать кластер Data Proc:
+ - при создании группа безопасности должна иметь такие же настройки, как и ВМ с AirFlow;
+ - в качестве SSH ключа использовать открытый ключ ВМ с AirFlow (можно также добавить SSH своего ПК и открыть IP мастерноды внешнему миру, но это не рекомендуется);
+
+8) Подключиться к мастерноде из консоли AirFlow можно по внутреннему IP адресу, можно по внешнему, если внешний ip был разрешен при создании кластера
 
 		ssh ubuntu@10.129.0.33
 
-11) Склонировать репозиторий, содержащий необходимый скрипт
+9) Склонировать репозиторий, содержащий необходимый скрипт
 
 		sudo apt update
 		sudo apt install git
 		git clone https://github.com/fds-git/MLOps.git
 
-12) Установить необходимые библиотеки
+10) Установить необходимые библиотеки
 
 		sudo apt install python3-pip
 		pip install numpy
 		pip install pandas
 		pip install fastparquet
 
+11) Возвращаемся в консоль AirFlow и устанавливаем SSH провайдер
 
-Далее AIRFLOW
+		sudo apt install python3-pip
+		sudo pip install apache-airflow-providers-ssh
 
-x) Устанавливаем провайдер
-sudo apt install python3-pip
-pip install apache-airflow-providers-ssh
-y) проверяем, что провайдер установился
-airflow providers list
+12) Проверяем, что провайдер установился
+		
+		sudo airflow providers list
 		
 13) Создаем новый DAG
 
-		cd /home/airflow/dags/
-		sudo nano run_generate_script.py
+		sudo nano /home/airflow/dags/run_generate_script.py
 
-	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_gen_data/for_airflow в только что созданный run_generate_script.py и сохраняем изменения
+	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_gen_data/for_airflow в только что созданный run_generate_script.py и сохраняем изменения (не забыть проверить, что remote_host в SSHHook соответствует IP адресу мастерноды)
 
-15) Подключиться к AirFlow через web-интерфейс
+14) Подключиться к AirFlow через web-интерфейс (логин и пароль находятся в консоли подключения к AirFlow по SSH)
 
 		http://51.250.23.122:80/
 
-	Здесь должны увидеть новый DAG с dag_id = mks_geo
+	Здесь должны увидеть новый DAG generate_data
 
-16) Запускаем переключателем DAG. Через некоторое время можем увидеть выполненные экземпляры DAG'a, в логах будут храниться результаты запросов к сервису.
-
-13) Сохранить сгенерированные данные в распределенную файловую систему
-
-		python3 MLOps/airflow_dataproc_gen_data/create_data.py
-		hdfs dfs -mkdir /user/testdata
-		hdfs dfs -copyFromLocal dataframe.csv /user/testdata/dataframe.csv
-
-14) Выполнить проверку результата сохранения
-
-		hdfs dfs -ls /user/testdata
+15) Запускаем переключателем DAG. Через некоторое время можем увидеть выполненные экземпляры DAG'a, внутри будут выполненные таски run_generate, в логах можно посмотреть результаты работы.
