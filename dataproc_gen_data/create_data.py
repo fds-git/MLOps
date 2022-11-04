@@ -2,9 +2,9 @@
 import os
 import numpy as np
 import pandas as pd
-import datetime
 import time
 import random
+import argparse
 
 def generate_customer_profiles_table(n_customers, random_state=0):
 
@@ -77,8 +77,6 @@ def get_list_terminals_within_radius(customer_profile, x_y_terminals, r):
     return available_terminals
 
 
-
-
 def generate_transactions_table(customer_profile, start_date = "2018-04-01", nb_days = 10):
 	customer_transactions = []
 	random.seed(int(customer_profile.CUSTOMER_ID))
@@ -138,7 +136,9 @@ def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, sta
     print("Time to associate terminals to customers: {0:.2}s".format(time.time()-start_time))
     
     start_time=time.time()
-    transactions_df=customer_profiles_table.groupby('CUSTOMER_ID').apply(lambda x : generate_transactions_table(x.iloc[0], nb_days=nb_days)).reset_index(drop=True)
+    transactions_df=customer_profiles_table.groupby('CUSTOMER_ID').apply(lambda x : generate_transactions_table(x.iloc[0], start_date=start_date, 
+    	nb_days=nb_days)).reset_index(drop=True)
+    
     # With Pandarallel
     #transactions_df=customer_profiles_table.groupby('CUSTOMER_ID').parallel_apply(lambda x : generate_transactions_table(x.iloc[0], nb_days=nb_days)).reset_index(drop=True)
     print("Time to generate transactions: {0:.2}s".format(time.time()-start_time))
@@ -154,13 +154,23 @@ def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, sta
     return (customer_profiles_table, terminal_profiles_table, transactions_df)
 
 
-(customer_profiles_table, terminal_profiles_table, transactions_df)=\
-    generate_dataset(n_customers = 500, 
-                     n_terminals = 100, 
-                     nb_days=183, 
-                     start_date="2018-04-01", 
-                     r=5)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Transactions genetation")
+    parser.add_argument("-c", dest="n_customers", help="number of customers", required=True, type=int)
+    parser.add_argument("-t", dest="n_terminals", help="number of customers", required=True, type=int)
+    parser.add_argument("-d", dest="nb_days", help="number of days", required=True, type=int)
+    parser.add_argument("-date", dest="start_date", help="2022-04-01", required=True, type=str)
+    parser.add_argument("-r", dest="r", help="radius", required=True, type=int)
 
-transactions_df['TX_DATETIME'] = transactions_df['TX_DATETIME'].astype(str)
+    args = parser.parse_args()
 
-transactions_df.to_csv('dataframe.csv', sep=',', index=False)
+    (customer_profiles_table, terminal_profiles_table, transactions_df)=\
+	    generate_dataset(n_customers = args.n_customers,
+	                     n_terminals = args.n_terminals,
+	                     nb_days = args.nb_days,
+	                     start_date = args.start_date,
+	                     r = args.r)
+
+    min_dt = transactions_df['TX_DATETIME'].min().strftime("%d_%m_%Y_%H:%M:%S")
+    max_dt = transactions_df['TX_DATETIME'].max().strftime("%d_%m_%Y_%H:%M:%S")
+    transactions_df.to_parquet(f'./transactions_{min_dt}-{max_dt}.parquet')

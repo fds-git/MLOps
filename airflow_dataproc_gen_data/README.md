@@ -59,6 +59,8 @@ TCP			80				CIDR					0.0.0.0/0 	—
 		sudo apt install python3-pip
 		pip install numpy
 		pip install pandas
+		pip install fastparquet
+
 
 Далее AIRFLOW
 

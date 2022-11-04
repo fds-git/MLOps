@@ -5,6 +5,8 @@ import pandas as pd
 import datetime
 import time
 import random
+from datetime import datetime
+
 
 def generate_customer_profiles_table(n_customers, random_state=0):
 
@@ -75,8 +77,6 @@ def get_list_terminals_within_radius(customer_profile, x_y_terminals, r):
     
     # Return the list of terminal IDs
     return available_terminals
-
-
 
 
 def generate_transactions_table(customer_profile, start_date = "2018-04-01", nb_days = 10):
@@ -163,4 +163,6 @@ def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, sta
 
 transactions_df['TX_DATETIME'] = transactions_df['TX_DATETIME'].astype(str)
 
-transactions_df.to_csv('dataframe.csv', sep=',', index=False)
+dt_string = datetime.now().strftime("%d_%m_%Y_%H:%M:%S")
+transactions_df.to_parquet(f'./table_{dt_string}.parquet')
+#transactions_df.to_csv('dataframe.csv', sep=',', index=False)
