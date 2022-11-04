@@ -65,9 +65,9 @@
 10) Установить необходимые библиотеки
 
 		sudo apt install python3-pip
-		pip install numpy
-		pip install pandas
-		pip install fastparquet
+		sudo pip install numpy
+		sudo pip install pandas
+		sudo pip install fastparquet
 
 11) Возвращаемся в консоль AirFlow и устанавливаем SSH провайдер
 
