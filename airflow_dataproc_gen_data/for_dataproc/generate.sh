@@ -5,9 +5,9 @@ echo $(pwd)
 
 NEW_DATE=`cat date.txt`
 sudo python3 increment_date.py
-echo $(NEW_DATE)
+echo ${NEW_DATE}
 
-sudo python3 create_data.py -c 500 -t 100 -d 2 -date $(NEW_DATE) -r 5
+sudo python3 create_data.py -c 500 -t 100 -d 2 -date ${NEW_DATE} -r 5
 
-#hdfs dfs -copyFromLocal ~/*.parquet /user/testdata/
-#sudo rm -r ~/*.parquet
+hdfs dfs -copyFromLocal ./*.parquet /user/testdata/
+sudo rm -r ./*.parquet

@@ -3,10 +3,10 @@ from airflow.providers.ssh.operators.ssh import SSHOperator
 from airflow.providers.ssh.hooks.ssh import SSHHook
 from datetime import datetime, timedelta
 
-
+# minutes=2 - чтобы скрипт точно запустился
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime.now() - timedelta(minutes=1)
+    'start_date': datetime.now() - timedelta(minutes=2)
 }
 
 dag = DAG('generate_data',
