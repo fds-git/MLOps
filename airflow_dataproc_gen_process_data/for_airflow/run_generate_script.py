@@ -10,8 +10,8 @@ default_args = {
 }
 
 sshHook = SSHHook(remote_host='10.129.0.42', port='22', username='ubuntu', key_file='/home/dima/id_rsa')
-generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_data/for_dataproc/generate.sh '
-to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_data/for_dataproc/to_hdfs.sh '
+generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/generate.sh '
+to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/to_hdfs.sh '
 
 
 with DAG('generate_data',

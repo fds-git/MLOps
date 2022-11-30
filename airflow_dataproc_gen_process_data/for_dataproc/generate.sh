@@ -1,6 +1,6 @@
 echo ******Hello World from AWS EC2 Instance*******
 echo $(hostname -i)
-cd /home/ubuntu/MLOps/airflow_dataproc_gen_data/for_dataproc
+cd /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc
 echo $(pwd)
 
 # Стартовую дату для генерации данных считываем из файла

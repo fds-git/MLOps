@@ -98,7 +98,7 @@
 
 		sudo nano /home/airflow/dags/run_generate_script.py
 
-	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_gen_data/for_airflow в только что созданный run_generate_script.py и сохраняем изменения (не забыть проверить, что remote_host в SSHHook соответствует IP адресу мастерноды)
+	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_gen_process_data/for_airflow в только что созданный run_generate_script.py и сохраняем изменения (не забыть проверить, что remote_host в SSHHook соответствует IP адресу мастерноды)
 
 16) Подключиться к AirFlow через web-интерфейс (логин и пароль находятся в консоли подключения к AirFlow по SSH)
 
