@@ -17,9 +17,10 @@ echo Start generate data from $START_DATE
 echo Increment days interval $INCREMENT_DAYS_INTERVAL
 
 # Генерируем новые данные и записываем имя сгенерированного файла в текстовый документ
-LAST_DATA_NAME=`sudo python3 create_data.py -c ${CUSTOMERS} -t ${TERMINALS} -d ${INCREMENT_DAYS_INTERVAL} -date ${START_DATE} -r ${RADIUS}`
+LAST_DATA_NAME=`python3 create_data.py -c ${CUSTOMERS} -t ${TERMINALS} -d ${INCREMENT_DAYS_INTERVAL} -date ${START_DATE} -r ${RADIUS}`
 echo ${LAST_DATA_NAME} > last_data_name.txt
+#export LAST_DATA_NAME
 
 # Рассчитываем стартовую дату для следующей итерации и сохраняем в файл (перезаписываем исходный)
-NEW_DATE=`sudo python3 increment_date.py -d ${INCREMENT_DAYS_INTERVAL} -date ${START_DATE}`
+NEW_DATE=`python3 increment_date.py -d ${INCREMENT_DAYS_INTERVAL} -date ${START_DATE}`
 echo ${NEW_DATE} > date.txt
