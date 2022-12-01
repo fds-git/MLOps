@@ -19,7 +19,6 @@ with DAG('generate_data',
         default_args=default_args
         ) as dag:
 
-
         generate_task = SSHOperator(
         ssh_hook=sshHook,
         task_id='run_generate',
