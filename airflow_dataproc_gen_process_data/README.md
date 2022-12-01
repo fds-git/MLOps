@@ -75,6 +75,8 @@
 
 		hdfs dfs -mkdir /user/testdata
 
+		hdfs dfs -mkdir /user/processed_data
+
 13) Возвращаемся в консоль AirFlow и устанавливаем SSH провайдер
 
 		sudo apt install python3-pip
