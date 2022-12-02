@@ -7,8 +7,8 @@ echo $(pwd)
 START_DATE=`cat date.txt`
 
 # Остальные параметры для генерации задаются здесь
-INCREMENT_DAYS_INTERVAL=6
-CUSTOMERS=500
+INCREMENT_DAYS_INTERVAL=7
+CUSTOMERS=2000
 TERMINALS=100
 RADIUS=5
 
