@@ -78,43 +78,43 @@ def get_list_terminals_within_radius(customer_profile, x_y_terminals, r):
 
 
 def generate_transactions_table(customer_profile, start_date = "2018-04-01", nb_days = 10):
-	customer_transactions = []
-	random.seed(int(customer_profile.CUSTOMER_ID))
-	np.random.seed(int(customer_profile.CUSTOMER_ID))
+    customer_transactions = []
+    random.seed(int(customer_profile.CUSTOMER_ID))
+    np.random.seed(int(customer_profile.CUSTOMER_ID))
 
-	# For all days
-	for day in range(nb_days):
-		# Random number of transactions for that day 
-		nb_tx = np.random.poisson(customer_profile.mean_nb_tx_per_day)
-		# If nb_tx positive, let us generate transactions
-		if nb_tx>0:
-			for tx in range(nb_tx):
-				# Time of transaction: Around noon, std 20000 seconds. This choice aims at simulating the fact that 
-				# most transactions occur during the day.
-				time_tx = int(np.random.normal(86400/2, 20000))
+    # For all days
+    for day in range(nb_days):
+        # Random number of transactions for that day 
+        nb_tx = np.random.poisson(customer_profile.mean_nb_tx_per_day)
+        # If nb_tx positive, let us generate transactions
+        if nb_tx>0:
+            for tx in range(nb_tx):
+                # Time of transaction: Around noon, std 20000 seconds. This choice aims at simulating the fact that 
+                # most transactions occur during the day.
+                time_tx = int(np.random.normal(86400/2, 20000))
 
-				# If transaction time between 0 and 86400, let us keep it, otherwise, let us discard it
-				if (time_tx>0) and (time_tx<86400):
-					# Amount is drawn from a normal distribution  
-					amount = np.random.normal(customer_profile.mean_amount, customer_profile.std_amount)
-					# If amount negative, draw from a uniform distribution
-					if amount<0:
-						amount = np.random.uniform(0,customer_profile.mean_amount*2)
+                # If transaction time between 0 and 86400, let us keep it, otherwise, let us discard it
+                if (time_tx>0) and (time_tx<86400):
+                    # Amount is drawn from a normal distribution  
+                    amount = np.random.normal(customer_profile.mean_amount, customer_profile.std_amount)
+                    # If amount negative, draw from a uniform distribution
+                    if amount<0:
+                        amount = np.random.uniform(0,customer_profile.mean_amount*2)
 
-					amount=np.round(amount,decimals=2)
+                    amount=np.round(amount,decimals=2)
 
-					if len(customer_profile.available_terminals)>0:
+                    if len(customer_profile.available_terminals)>0:
 
-						terminal_id = random.choice(customer_profile.available_terminals)
-						customer_transactions.append([time_tx+day*86400, day, customer_profile.CUSTOMER_ID, terminal_id, amount])
+                        terminal_id = random.choice(customer_profile.available_terminals)
+                        customer_transactions.append([time_tx+day*86400, day, customer_profile.CUSTOMER_ID, terminal_id, amount])
 
-	customer_transactions = pd.DataFrame(customer_transactions, columns=['TX_TIME_SECONDS', 'TX_TIME_DAYS', 'CUSTOMER_ID', 'TERMINAL_ID', 'TX_AMOUNT'])
+    customer_transactions = pd.DataFrame(customer_transactions, columns=['TX_TIME_SECONDS', 'TX_TIME_DAYS', 'CUSTOMER_ID', 'TERMINAL_ID', 'TX_AMOUNT'])
 
-	if len(customer_transactions)>0:
-		customer_transactions['TX_DATETIME'] = pd.to_datetime(customer_transactions["TX_TIME_SECONDS"], unit='s', origin=start_date)
-		customer_transactions=customer_transactions[['TX_DATETIME','CUSTOMER_ID', 'TERMINAL_ID', 'TX_AMOUNT','TX_TIME_SECONDS', 'TX_TIME_DAYS']]
+    if len(customer_transactions)>0:
+        customer_transactions['TX_DATETIME'] = pd.to_datetime(customer_transactions["TX_TIME_SECONDS"], unit='s', origin=start_date)
+        customer_transactions=customer_transactions[['TX_DATETIME','CUSTOMER_ID', 'TERMINAL_ID', 'TX_AMOUNT','TX_TIME_SECONDS', 'TX_TIME_DAYS']]
 
-	return customer_transactions 
+    return customer_transactions 
 
 
 def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, start_date="2018-04-01", r=5):
@@ -137,7 +137,7 @@ def generate_dataset(n_customers = 10000, n_terminals = 1000000, nb_days=90, sta
     
     start_time=time.time()
     transactions_df=customer_profiles_table.groupby('CUSTOMER_ID').apply(lambda x : generate_transactions_table(x.iloc[0], start_date=start_date, 
-    	nb_days=nb_days)).reset_index(drop=True)
+        nb_days=nb_days)).reset_index(drop=True)
     
     # With Pandarallel
     #transactions_df=customer_profiles_table.groupby('CUSTOMER_ID').parallel_apply(lambda x : generate_transactions_table(x.iloc[0], nb_days=nb_days)).reset_index(drop=True)
@@ -164,7 +164,7 @@ def add_frauds(customer_profiles_table, terminal_profiles_table, transactions_df
     transactions_df.loc[transactions_df.TX_AMOUNT>220, 'TX_FRAUD']=1
     transactions_df.loc[transactions_df.TX_AMOUNT>220, 'TX_FRAUD_SCENARIO']=1
     nb_frauds_scenario_1=transactions_df.TX_FRAUD.sum()
-    print("Number of frauds from scenario 1: "+str(nb_frauds_scenario_1))
+    #print("Number of frauds from scenario 1: "+str(nb_frauds_scenario_1))
     
     # Scenario 2
     for day in range(transactions_df.TX_TIME_DAYS.max()):
@@ -179,7 +179,7 @@ def add_frauds(customer_profiles_table, terminal_profiles_table, transactions_df
         transactions_df.loc[compromised_transactions.index,'TX_FRAUD_SCENARIO']=2
     
     nb_frauds_scenario_2=transactions_df.TX_FRAUD.sum()-nb_frauds_scenario_1
-    print("Number of frauds from scenario 2: "+str(nb_frauds_scenario_2))
+    #print("Number of frauds from scenario 2: "+str(nb_frauds_scenario_2))
     
     # Scenario 3
     for day in range(transactions_df.TX_TIME_DAYS.max()):
@@ -202,7 +202,7 @@ def add_frauds(customer_profiles_table, terminal_profiles_table, transactions_df
         
                              
     nb_frauds_scenario_3=transactions_df.TX_FRAUD.sum()-nb_frauds_scenario_2-nb_frauds_scenario_1
-    print("Number of frauds from scenario 3: "+str(nb_frauds_scenario_3))
+    #print("Number of frauds from scenario 3: "+str(nb_frauds_scenario_3))
     
     return transactions_df  
 
@@ -218,11 +218,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     (customer_profiles_table, terminal_profiles_table, transactions_df)=\
-	    generate_dataset(n_customers = args.n_customers,
-	                     n_terminals = args.n_terminals,
-	                     nb_days = args.nb_days,
-	                     start_date = args.start_date,
-	                     r = args.r)
+        generate_dataset(n_customers = args.n_customers,
+                         n_terminals = args.n_terminals,
+                         nb_days = args.nb_days,
+                         start_date = args.start_date,
+                         r = args.r)
 
     #min_dt = transactions_df['TX_DATETIME'].min().strftime("%d_%m_%Y_%H:%M:%S")
     #max_dt = transactions_df['TX_DATETIME'].max().strftime("%d_%m_%Y_%H:%M:%S")

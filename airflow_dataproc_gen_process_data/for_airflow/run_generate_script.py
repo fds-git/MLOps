@@ -9,7 +9,7 @@ default_args = {
     'start_date': datetime.now() - timedelta(minutes=2)
 }
 
-sshHook = SSHHook(remote_host='10.129.0.5', port='22', username='ubuntu', key_file='/home/dima/id_rsa')
+sshHook = SSHHook(remote_host='10.129.0.20', port='22', username='ubuntu', key_file='/home/dima/id_rsa', timeout=50)
 generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/generate.sh '
 to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/to_hdfs.sh '
 process_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/data_process.sh '

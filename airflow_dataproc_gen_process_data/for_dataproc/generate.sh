@@ -8,7 +8,7 @@ START_DATE=`cat date.txt`
 
 # Остальные параметры для генерации задаются здесь
 INCREMENT_DAYS_INTERVAL=7
-CUSTOMERS=2000
+CUSTOMERS=500
 TERMINALS=100
 RADIUS=5
 

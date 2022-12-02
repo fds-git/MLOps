@@ -130,3 +130,5 @@
 		ssh -L 8888:localhost:8888 ubuntu@51.250.21.57
 
 Если в jupyter ошибка при import findspark, то установить findspark без sudo и перезапустить jupyter
+
+Если в AirFlow ошибка, связанная с ssh timeout при создании спарк сессии (spark = SparkSession.builder.appName("Feature").getOrCreate()), попробовать перезагрузить кластер
