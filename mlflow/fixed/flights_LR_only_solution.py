@@ -32,7 +32,7 @@ def main(args):
     logger.info("Creating Spark Session ...")
     spark = SparkSession\
         .builder\
-        .appName("Student_Name_flights_LR_only")\
+        .appName("fedorov_flights_LR_only")\
         .getOrCreate()
 
     # Load data. Исходные данные для задачи находятся по адресу 's3a://mlflow-test/data/flights-larger.csv'
@@ -48,9 +48,10 @@ def main(args):
     train_data = assembler.transform(data)
 
     # Prepare MLFlow experiment for logging
-#     client = MlflowClient()
-#     experiment = client.get_experiment_by_name("Spark_Experiment")
-#     experiment_id = experiment.experiment_id
+    mlflow.set_tracking_uri('http://10.129.0.26:5000')
+    client = MlflowClient()
+    experiment = client.get_experiment_by_name("Spark_Experiment")
+    experiment_id = experiment.experiment_id
     
     regression = get_regression()
 

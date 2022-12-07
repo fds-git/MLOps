@@ -10,18 +10,18 @@
 Исходящий трафик:
 | Протокол | Диапазон портов | Тип назначения       | Назначение    | Описание    |
 |----------|-----------------|----------------------|---------------|-------------|
-| Any	   | 0-65535	     |	Группа безопасности |	Self	    | output      |
-| Any	   | 0-65535		 |	CIDR				|	0.0.0.0/0   | out         |
+| Any	     | 0-65535	       |	Группа безопасности |	Self	        | output      |
+| Any	     | 0-65535		     |	CIDR				        |	0.0.0.0/0     | out         |
 
 Входящий трафик:
 | Протокол | Диапазон портов |	Тип источника       | Источник      | Описание    |
 |----------|-----------------|----------------------|---------------|-------------|
-| Any	   | 0-65535		 |	Группа безопасности	|	Self	    | input       |
-| TCP	   | 22				 |  CIDR				|	0.0.0.0/0   | SSH         |
-| TCP	   | 443			 |  CIDR				|	0.0.0.0/0   | HTTPS       |
-| Any      | 4040-4050       |  CIDR                |   0.0.0.0/0   | Spark WebUI |
-| Any      | 8888            |  CIDR                |   0.0.0.0/0   | Jupyter     |
-| Any      | 8000            |  CIDR                |   0.0.0.0/0   | MLFlow      |
+| Any	     | 0-65535		     |	Группа безопасности	|	Self	        | input       |
+| TCP	     | 22				       |  CIDR				        |	0.0.0.0/0     | SSH         |
+| TCP	     | 443			       |  CIDR				        |	0.0.0.0/0     | HTTPS       |
+| Any      | 4040-4050       |  CIDR                | 0.0.0.0/0     | Spark WebUI |
+| Any      | 8888            |  CIDR                | 0.0.0.0/0     | Jupyter     |
+| Any      | 8000            |  CIDR                | 0.0.0.0/0     | MLFlow      |
 
 3) В Object Storage создать бакет mlflowbucket с приватным доступом и в ACL бакета добавить текущего пользователя Yandex Cloud с правами read и write
 
@@ -42,6 +42,10 @@
 		sudo apt install tmux
 		tmux
 
+
+Порядок настройки MlFlow взят отсюда https://mcs.mail.ru/blog/mlflow-in-the-cloud
+
+
 10) Установить Conda
 
 		curl -O https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
@@ -58,7 +62,7 @@
 		sudo apt update
 		conda install python
 		pip install mlflow
-		pip install boto3
+		pip install boto3                 # для работы MLFlow с S3 хранилищем
 		sudo apt install gcc
 		pip install psycopg2-binary
 
@@ -68,7 +72,7 @@
 
 		добавить:
 		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
-		MLFLOW_TRACKING_URI=http://10.129.0.32:8000 (внутренний адрес ВМ с MLFlow)
+		MLFLOW_TRACKING_URI=http://10.129.0.26:5000 (внутренний адрес ВМ с MLFlow)
 
 14) Создать файл:
 
@@ -88,7 +92,9 @@
 
 		mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3a://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
 
-18) !!!!!!!! ЗАДАТЬ ПАРОЛЬ ДЛЯ ПОЛЬЗОВАТЕЛЯ WEB ИНТЕРФЕЙСА (или пробросить SSH тоннель - ssh тоннель надо тоже фиксировать через tmux)
+		внутренее_имя_хоста_базы_данных например = rc1b-xqc7kmhsi8kne1bt.mdb.yandexcloud.net
+
+18) !!!!!!!! ЗАДАТЬ ПАРОЛЬ ДЛЯ ПОЛЬЗОВАТЕЛЯ WEB ИНТЕРФЕЙСА (или пробросить SSH тоннель через 127.0.0.1 - ssh тоннель надо тоже фиксировать через tmux)
 
 19) Подключаемся в web интерфейсу "внешний_IP_ВМ_MLFlow":8000
 
@@ -98,7 +104,7 @@
 
 		ssh ubuntu@158.160.16.238
 
-22) Установить и запустить tmux, чтобы сессия не прерывалась
+22) Установить и запустить tmux, чтобы сессия не прерывалась и разделить консоль
 	
 		sudo apt install tmux
 		tmux
@@ -112,6 +118,25 @@
 		ssh -L 8888:localhost:8888 ubuntu@158.160.16.238
 
 25) В браузере подключиться к localhost:8888 и ввести токен
+
+26) На кластере установить git и клонировать репозиторий с примерами
+
+		sudo apt install git
+		git clone https://github.com/fds-git/MLOps
+
+27) Устанавливаем клиентскую часть mlflow
+
+		pip install mlflow
+
+28) В UI Spark создать эксперимент Spark_Experiment
+
+27) Переходим в директорию со скриптами и запускаем 
+
+		cd MLOps/mlflow/fixed/
+		bash flights_LR_only_solution.sh
+
+28) В UI Spark видим выполнение задачи, в UI MLFlow видим результат эксперимента
+
 
 Внимательно с именами файлов
 Разобрать почему findspark иногда находится, иногда нет
