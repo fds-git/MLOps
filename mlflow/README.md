@@ -10,15 +10,15 @@
 Исходящий трафик:
 | Протокол | Диапазон портов | Тип назначения       | Назначение    | Описание    |
 |----------|-----------------|----------------------|---------------|-------------|
-| Any	     | 0-65535	       |	Группа безопасности |	Self	        | output      |
-| Any	     | 0-65535		     |	CIDR				        |	0.0.0.0/0     | out         |
+| Any	     | 0-65535	     |	Группа безопасности |	Self	    | output      |
+| Any	     | 0-65535		 |	CIDR				|	0.0.0.0/0   | out         |
 
 Входящий трафик:
 | Протокол | Диапазон портов |	Тип источника       | Источник      | Описание    |
 |----------|-----------------|----------------------|---------------|-------------|
-| Any	     | 0-65535		     |	Группа безопасности	|	Self	        | input       |
-| TCP	     | 22				       |  CIDR				        |	0.0.0.0/0     | SSH         |
-| TCP	     | 443			       |  CIDR				        |	0.0.0.0/0     | HTTPS       |
+| Any	   | 0-65535		 |	Группа безопасности	|	Self	    | input       |
+| TCP	   | 22				 |  CIDR				|	0.0.0.0/0   | SSH         |
+| TCP	   | 443			 |  CIDR				|	0.0.0.0/0   | HTTPS       |
 | Any      | 4040-4050       |  CIDR                | 0.0.0.0/0     | Spark WebUI |
 | Any      | 8888            |  CIDR                | 0.0.0.0/0     | Jupyter     |
 | Any      | 8000            |  CIDR                | 0.0.0.0/0     | MLFlow      |
@@ -42,9 +42,7 @@
 		sudo apt install tmux
 		tmux
 
-
 Порядок настройки MlFlow взят отсюда https://mcs.mail.ru/blog/mlflow-in-the-cloud
-
 
 10) Установить Conda
 
@@ -72,7 +70,7 @@
 
 		добавить:
 		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
-		MLFLOW_TRACKING_URI=http://10.129.0.26:5000 (внутренний адрес ВМ с MLFlow)
+		MLFLOW_TRACKING_URI=http://10.129.0.26:8000 (внутренний адрес ВМ с MLFlow)
 
 14) Создать файл:
 
@@ -124,40 +122,51 @@
 		sudo apt install git
 		git clone https://github.com/fds-git/MLOps
 
-27) Устанавливаем клиентскую часть mlflow
+27) Правим переменные окружения
 
-		pip install mlflow
+		sudo nano /etc/environment
+
+		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
+		MLFLOW_TRACKING_URI=http://10.129.0.26:8000 (внутренний адрес ВМ с MLFlow)
 
 28) В UI Spark создать эксперимент Spark_Experiment
 
-27) Переходим в директорию со скриптами и запускаем 
+29) Создать файл:
+
+		mkdir ~/.aws
+		nano ~/.aws/credentials
+
+30) И добавить в него credentials для доступа к S3 (см. пункт 5)
+
+		aws_access_key_id = YCA1JE4zVgb2pBpfhDvAPwsfKg3
+		aws_secret_access_key = YCO234dQVQXycd1_rok-qUHdwqdq8KsoIsYwcQZPk
+
+31) Устанавливаем клиентскую часть mlflow
+		conda create -n mlflow_env
+		conda activate mlflow_env
+		conda install python
+		pip install mlflow
+		pip install matplotlib
+		pip install sklearn
+		pip install boto3
+		conda install -c anaconda ipykernel
+		python -m ipykernel install --user --name ex --display-name "Python (mlflow)"
+
+32) Переходим в директорию со скриптами и запускаем 
 
 		cd MLOps/mlflow/fixed/
 		bash flights_LR_only_solution.sh
 
-28) В UI Spark видим выполнение задачи, в UI MLFlow видим результат эксперимента
-
-
-Внимательно с именами файлов
-Разобрать почему findspark иногда находится, иногда нет
+33) В UI Spark видим выполнение задачи, в UI MLFlow видим результат эксперимента
 
 в консоли вкладки
 1 - ВМ MLFlow (разбито на 2 части через tmux: запущенный mlflow server и командная строка ВМ MLFlow)
 2 - Мастернода DataProc (разбито на 2 части через tmux: запущенный jupyter notebook и командная строка мастерноды)
 3 - локальная машина (разбито на 2 части через tmux: тоннель для juputer notebook и для web интерфейса MLFlow)
 
-упражнение flights_LR_only работало
-упражнение flights_pipeline_solution не работало
-ошибка:
-
-Traceback (most recent call last):
-  File "/home/ubuntu/solutions/flights_pipeline_solution.py", line 114, in <module>
-    main(args)
-  File "/home/ubuntu/solutions/flights_pipeline_solution.py", line 57, in main
-    experiment_id = experiment.experiment_id
-AttributeError: 'NoneType' object has no attribute 'experiment_id'
-
-Не понятно, как клиент MLFlow находит развернутый сервер
-
 Уточнить, правильно ли:
 mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3a://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
+
+Разобраться, как открывать веб интерфейс MLFlow, не открывая доступ к серверу со всего мира
+
+использовать mlflow.pyspark.ml.autolog для логирования всех промежуточных значений гиперпараметров при поиске гиперпараметров с помощью pyspark

@@ -48,7 +48,7 @@ def main(args):
     train_data = assembler.transform(data)
 
     # Prepare MLFlow experiment for logging
-    mlflow.set_tracking_uri('http://10.129.0.26:5000')
+    mlflow.set_tracking_uri('http://10.129.0.26:8000')
     client = MlflowClient()
     experiment = client.get_experiment_by_name("Spark_Experiment")
     experiment_id = experiment.experiment_id

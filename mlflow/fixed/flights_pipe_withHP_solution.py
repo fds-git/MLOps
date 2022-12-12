@@ -35,14 +35,14 @@ def get_pipeline():
 
 def main(args):
     
-    # Create Spark Session. !!! Добавьте в название приложения оригинальное имя
+    # Create Spark Session. Добавьте в название приложения оригинальное имя
     logger.info("Creating Spark Session ...")
     spark = SparkSession\
         .builder\
         .appName("Student_Name_flights_pipe_withHP")\
         .getOrCreate()
 
-    # Load data. 
+    # Load data. Исходные данные для задачи находятся по адресу 's3a://mlflow-test/data/flights-larger.csv'
     logger.info("Loading Data ...")
     train_artifact_name = args.train_artifact
     data_path = get_data_path(train_artifact_name)
@@ -53,43 +53,37 @@ def main(args):
  
 
     # Prepare MLFlow experiment for logging
+    mlflow.set_tracking_uri('http://158.160.15.5:8000')
     client = MlflowClient()
     experiment = client.get_experiment_by_name("Spark_Experiment")
     experiment_id = experiment.experiment_id
     
     
-    # !!! Добавьте в название вашего run имя, по которому его можно будет найти в MLFlow
+    # Добавьте в название вашего run имя, по которому его можно будет найти в MLFlow
     run_name = 'Student_Name_flights_pipe_withHP' + ' ' + str(datetime.now())
 
     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id):
         
         inf_pipeline = get_pipeline()
 
-        # !!! Получите этап regression из inf_pipeline
-        regression = # Подсказака: используйте .getStages
-                     # regression понадобится для коррекного определения
-                     # возможных оптимальных параметров
+        regression = inf_pipeline.getStages()[-1]
 
-        # !!! Задайте сетку, по которой будет проводиться поиск оптимальных параметров.
-        # Подсказка: используйте ParamGridBuilder и regression, который получили выше
-        paramGrid = (____________()
-            .addGrid(_____, _______) # fitIntecept может принимать значения True и False
-            .addGrid(_____, _______) # regParam может принимать значения 0.001, 0.01, 0.1, 1, 10
-            .addGrid(_____, _______) # elasticNetParam может принимать значения 0, 0.25, 0.5, 0.75, 1
+        paramGrid = (ParamGridBuilder()
+            .addGrid(regression.fitIntercept, [True, False])
+            .addGrid(regression.regParam, [0.001, 0.01, 0.1, 1, 10])
+            .addGrid(regression.elasticNetParam, [0, 0.25, 0.5, 0.75, 1])
             .build())
 
         evaluator = RegressionEvaluator(labelCol='duration')
 
         # By default 80% of the data will be used for training, 20% for validation.
         trainRatio = 1 - args.val_frac
-
-        # !!! Создайте корректный объект TrainValidationSplit
         # A TrainValidationSplit requires an Estimator, a set of Estimator ParamMaps, and an Evaluator.
-        tvs = TrainValidationSplit(estimator=_________,
-                            estimatorParamMaps=_________,
-                            evaluator=_________,
-                            trainRatio=________,
-                            )
+        tvs = TrainValidationSplit(estimator=inf_pipeline,
+                            estimatorParamMaps=paramGrid,
+                            evaluator=evaluator,
+                            trainRatio=trainRatio,
+                            parallelism=2)
         # Run TrainValidationSplit, and choose the best set of parameters.
         logger.info("Fitting new inference pipeline ...")
         model = tvs.fit(data)
@@ -107,7 +101,9 @@ def main(args):
         logger.info(model.bestModel.stages[-1].explainParam('fitIntercept'))
         logger.info(model.bestModel.stages[-1].explainParam('elasticNetParam'))
 
-        #!!! Залогируйте оптимальные параметры с помощью MLFlow
+        mlflow.log_param('optimal_regParam', best_regParam)
+        mlflow.log_param('optimal_fitIntercept', best_fitIntercept)
+        mlflow.log_param('optimal_elasticNetParam', best_elasticNetParam)
 
         logger.info("Scoring the model ...")
         predictions = model.transform(data)
