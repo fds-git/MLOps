@@ -1,7 +1,4 @@
 import argparse
-import findspark
-findspark.init()
-findspark.find()
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import OneHotEncoder

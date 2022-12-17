@@ -1,4 +1,4 @@
-cd /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc
+cd /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc
 
 #hdfs dfs -copyFromLocal ./*.parquet /user/testdata/
 #sudo rm -r ./*.parquet

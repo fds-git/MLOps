@@ -1,6 +1,6 @@
 ### Автоматический запуск скриптов на кластере Data Proc через AirFlow
 
-На кластере DataProc Через AirFlow запускаются скрипты генерации данных, сохранения данных в HDFS и предобработки данных с помощью PySpark
+На кластере DataProc Через AirFlow запускаются скрипты генерации данных, сохранения данных в HDFS и предобработки данных с помощью PySpark и обучения модели с логгированием в MLFLOW
 
 Важно: ВМ с AirFlow и кластер Data Proc должны находиться в одной сети и иметь одну и ту же группу безопасности
 
@@ -23,6 +23,7 @@
 | TCP	   | 443			 |  CIDR				|	0.0.0.0/0   | HTTPS       |
 | Any	   | 8888			 |  CIDR				|	0.0.0.0/0   | Jupyter     |
 | Any	   | 4040-4050   	 |  CIDR				|	0.0.0.0/0   | Spark WebUI |
+| Any      | 8000            |  CIDR                |   0.0.0.0/0   | MLFlow      |
 
 
 3) Подключиться по SSH с локальной машины и скопировать логин/пароль для подключения к AirFlow через web-интерфейс
@@ -73,7 +74,7 @@
 		sudo pip install numpy
 		sudo pip install pandas
 		sudo pip install fastparquet
-		sudo pip install findspark
+		#sudo pip install findspark
 
 12) Создаем директорию в hdfs для сохранения данных, которые будут генерироваться
 
@@ -137,3 +138,5 @@
 Если в AirFlow ошибка, связанная с ssh timeout при создании спарк сессии (spark = SparkSession.builder.appName("Feature").getOrCreate()), попробовать перезагрузить кластер Data Proc
 
 Если в AirFlow ошибка, связанная с import ssh, попробовать перезагрузить ВМ AirFlow
+
+To Do: 13 пункт: может можно без команд просто перезайти и веб интерфейс заработает?
