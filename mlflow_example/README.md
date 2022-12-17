@@ -79,8 +79,8 @@
 
 15) И добавить в него credentials для доступа к S3 (см. пункт 5)
 
-		aws_access_key_id = YCA1JE4zVgb2pBpfhDvAPwsfKg3
-		aws_secret_access_key = YCO234dQVQXycd1_rok-qUHdwqdq8KsoIsYwcQZPk
+		aws_access_key_id = xxxx
+		aws_secret_access_key = yyyy
 
 16) Применяем настройки
 
@@ -138,8 +138,8 @@
 
 30) И добавить в него credentials для доступа к S3 (см. пункт 5)
 
-		aws_access_key_id = YCA1JE4zVgb2pBpfhDvAPwsfKg3
-		aws_secret_access_key = YCO234dQVQXycd1_rok-qUHdwqdq8KsoIsYwcQZPk
+		aws_access_key_id = xxxx
+		aws_secret_access_key = yyyy
 
 31) Устанавливаем клиентскую часть mlflow
 		conda create -n mlflow_env

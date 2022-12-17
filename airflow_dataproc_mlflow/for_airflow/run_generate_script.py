@@ -10,9 +10,10 @@ default_args = {
 }
 
 sshHook = SSHHook(remote_host='10.129.0.20', port='22', username='ubuntu', key_file='/home/dima/id_rsa', timeout=50)
-generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/generate.sh '
-to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/to_hdfs.sh '
-process_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_gen_process_data/for_dataproc/data_process.sh '
+generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/generate.sh '
+to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/to_hdfs.sh '
+process_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/data_process.sh '
+fit_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/fit.sh '
 
 with DAG('generate_data',
     schedule_interval='* * * * *' ,
@@ -37,4 +38,10 @@ with DAG('generate_data',
     command=process_command
     )
 
-    generate_task >> to_hdfs_task >> process_task
+    process_task = SSHOperator(
+    ssh_hook=sshHook,
+    task_id='fir',
+    command=fit_command
+    )
+
+    generate_task >> to_hdfs_task >> process_task >> fit
