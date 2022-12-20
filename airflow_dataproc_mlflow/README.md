@@ -76,6 +76,8 @@
 		sudo nano /etc/environment
 
 		добавить:
+		[default]
+  		region=ru-central1
 		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
 		MLFLOW_TRACKING_URI=http://10.129.0.26:8000 (внутренний адрес ВМ с MLFlow)
 
