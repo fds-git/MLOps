@@ -24,3 +24,4 @@ echo ${LAST_DATA_NAME} > last_data_name.txt
 # Рассчитываем стартовую дату для следующей итерации и сохраняем в файл (перезаписываем исходный)
 NEW_DATE=`python3 increment_date.py -d ${INCREMENT_DAYS_INTERVAL} -date ${START_DATE}`
 echo ${NEW_DATE} > date.txt
+

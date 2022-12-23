@@ -8,3 +8,4 @@ cd /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc
 LAST_DATA_NAME=`cat last_data_name.txt`
 hdfs dfs -copyFromLocal ./${LAST_DATA_NAME} /user/testdata/
 sudo rm -r ./${LAST_DATA_NAME}
+

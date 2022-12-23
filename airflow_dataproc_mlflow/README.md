@@ -79,7 +79,7 @@
 		[default]
   		region=ru-central1
 		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
-		MLFLOW_TRACKING_URI=http://10.129.0.26:8000 (внутренний адрес ВМ с MLFlow)
+		MLFLOW_TRACKING_URI=http://10.129.0.26:8000 (внутренний адрес ВМ с MLFlow) (http://localhost:8000)
 
 14) Создать файл:
 
@@ -97,13 +97,13 @@
 
 17) Теперь можно запускать Tracking Server
 
-		mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3a://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
+		mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
 
 		внутренее_имя_хоста_базы_данных например = rc1b-xqc7kmhsi8kne1bt.mdb.yandexcloud.net
 
 18) !!!!!!!! ЗАДАТЬ ПАРОЛЬ ДЛЯ ПОЛЬЗОВАТЕЛЯ WEB ИНТЕРФЕЙСА (или пробросить SSH тоннель через 127.0.0.1 - ssh тоннель надо тоже фиксировать через tmux)
 
-19) Подключаемся в web интерфейсу "внешний_IP_ВМ_MLFlow":8000 и в UI MLFlow создать эксперимент Spark_Experiment
+19) Подключаемся в web интерфейсу "внешний_IP_ВМ_MLFlow":8000 и в UI MLFlow создать эксперимент Spark_Experiment (ВАЖНО при создании в поле "Artifact Location" ввести s3://mlflowbucket/artifacts (НЕ s3a!!!)
 
 ## Настройка AirFlow
 
@@ -211,7 +211,7 @@
 		aws_access_key_id = xxxx
 		aws_secret_access_key = yyyy
 
-38) Устанавливаем клиентскую часть mlflow
+38) Устанавливаем клиентскую часть mlflow (хотя можно conda не утсанавливать на клиенте)
 		conda create -n mlflow_env
 		conda activate mlflow_env
 		conda install python
@@ -252,7 +252,8 @@
 45) Обратить внимание на AirFlow:
 - провайдеры в AirFlow устанавливать только через sudo, т.к. web-интерфейс, запускается через пользователя airflow и в противном случае не подтянет новые провайдеры;
 - если в AirFlow в качестве команды хотим передать через SSHOperator запуск скрипта, например ('bash generate.sh '), то после .sh всегда пробел, иначе - ошибка;
-- в date.txt после даты не должно быть пробелов, иначе - ошибка.
+- в date.txt после даты не должно быть пробелов, иначе - ошибка;
+- Если при выполнении DAG получена ошибка "SSH command timed out", то попробовать помимо параметров timeout в SSHHook и conn_timeout в SSHOperator увеличить значение cmd_timeout в SSHOperator.
 
 46) Обратить внимание на DataProc:
 
@@ -265,6 +266,10 @@
 		ssh -L 8888:localhost:8888 ubuntu@51.250.21.57
 
 - Подключаемся к jupyter на своей машине по 127.0.0.1:8888 для отладки, проведения экспериментов и анализа, если необходимо (нужно ввести запомненный токен)
+
+- Чтобы в jupyter notebook запустить spark, необходимо установить и импортировать библиотеку 
+
+		pip install findspark
 
 - для отладки скриптов запускаем их вручную на кластере, перед этим отключив DAG в AirFlow
 

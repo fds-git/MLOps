@@ -88,7 +88,7 @@
 
 17) Теперь можно запускать Tracking Server
 
-		mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3a://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
+		mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
 
 		внутренее_имя_хоста_базы_данных например = rc1b-xqc7kmhsi8kne1bt.mdb.yandexcloud.net
 
@@ -129,7 +129,7 @@
 		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
 		MLFLOW_TRACKING_URI=http://10.129.0.26:8000 (внутренний адрес ВМ с MLFlow)
 
-28) В UI Spark создать эксперимент Spark_Experiment
+28) В UI Spark создать эксперимент Spark_Experiment (ВАЖНО при создании в поле "Artifact Location" ввести s3://mlflowbucket/artifacts (НЕ s3a!!!))
 
 29) Создать файл:
 
@@ -165,7 +165,7 @@
 3 - локальная машина (разбито на 2 части через tmux: тоннель для juputer notebook и для web интерфейса MLFlow)
 
 Уточнить, правильно ли:
-mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3a://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
+mlflow server --backend-store-uri postgresql://user1:заданный_пароль@внутренее_имя_хоста_базы_данных:6432/db1 --default-artifact-root s3://mlflowbucket/artifacts/ -h 0.0.0.0 -p 8000
 
 Разобраться, как открывать веб интерфейс MLFlow, не открывая доступ к серверу со всего мира
 

@@ -7,3 +7,4 @@ spark-submit \
 --jars mlflow-spark-1.27.0.jar \
 data_process.py \
 -name ${LAST_DATA_NAME}
+

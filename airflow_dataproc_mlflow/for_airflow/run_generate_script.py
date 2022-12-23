@@ -6,17 +6,17 @@ from datetime import datetime, timedelta
 # minutes=2 - чтобы скрипт точно запустился
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime.now() - timedelta(minutes=2)
+    'start_date': datetime.now() - timedelta(minutes=10)
 }
 
-sshHook = SSHHook(remote_host='10.129.0.13', port='22', username='ubuntu', key_file='/home/dima/id_rsa', timeout=50)
+sshHook = SSHHook(remote_host='10.129.0.13', port='22', username='ubuntu', key_file='/home/dima/id_rsa', timeout=1000)
 generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/generate.sh '
 to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/to_hdfs.sh '
 process_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/data_process.sh '
 fit_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/fit.sh '
 
 with DAG('generate_data',
-    schedule_interval='* * * * *' ,
+    schedule_interval='*/5 * * * *' ,
     default_args=default_args
     ) as dag:
 
@@ -41,7 +41,9 @@ with DAG('generate_data',
     fit_task = SSHOperator(
     ssh_hook=sshHook,
     task_id='fit',
-    command=fit_command
+    command=fit_command,
+    conn_timeout=1000,
+    cmd_timeout=1000
     )
 
     generate_task >> to_hdfs_task >> process_task >> fit_task
