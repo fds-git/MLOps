@@ -1,0 +1,2 @@
+Как через nginx задать пользователя и пароль: https://stackoverflow.com/questions/58956459/how-to-run-authentication-on-a-mlflow-server
+Использование systemd для автоматического перезапуска https://pedro-munoz.tech/how-to-setup-mlflow-in-production/
