@@ -24,12 +24,12 @@ USERNAME = Variable.get("USERNAME")
 KEY_FILE = Variable.get("KEY_FILE")
 
 sshHook = SSHHook(remote_host=DATAPROC_IP, port=DATAPROC_PORT, username=USERNAME, key_file=KEY_FILE, timeout=1000)
-generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts/generate.sh '
-to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts/to_hdfs.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
-process_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts/data_process.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
-fit_log_reg_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts/fit_lr.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
-fit_rand_for_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts/fit_rf.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
-ttest_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts/ttest.sh '
+generate_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts/generate.sh '
+to_hdfs_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts/to_hdfs.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
+process_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts/data_process.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
+fit_log_reg_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts/fit_lr.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
+fit_rand_for_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts/fit_rf.sh {{ ti.xcom_pull(task_ids="decode_generated_file_name") }}'
+ttest_command = 'bash /home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts/ttest.sh '
 
 with DAG('gen_data',
     schedule_interval='*/5 * * * *' ,
