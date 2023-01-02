@@ -108,9 +108,9 @@
 
 		внутренее_имя_хоста_базы_данных например = rc1b-xqc7kmhsi8kne1bt.mdb.yandexcloud.net
 
-18) !!!!!!!! ЗАДАТЬ ПАРОЛЬ ДЛЯ ПОЛЬЗОВАТЕЛЯ WEB ИНТЕРФЕЙСА (или пробросить SSH тоннель через 127.0.0.1 - ssh тоннель надо тоже фиксировать через tmux)
+18) Обрать внимание, что доступ к MLFlow может осуществляться из любого ресурса в интернете
 
-19) Подключаемся в web интерфейсу "внешний_IP_ВМ_MLFlow":8000 и в UI MLFlow создать эксперимент Spark_Experiment (ВАЖНО при создании в поле "Artifact Location" ввести s3://mlflowbucket/artifacts (НЕ s3a!!!)
+19) Подключаемся в web интерфейсу "внешний_IP_ВМ_MLFlow":8000 и в UI MLFlow создать эксперимент "Homework" (ВАЖНО при создании в поле "Artifact Location" ввести s3://mlflowbucket/artifacts (НЕ s3a!!!)
 
 ## Настройка AirFlow
 
@@ -169,33 +169,26 @@
 
 	Копируем содержимое run_generate_script.py из репозитория MLOps/airflow_dataproc_mlflow/for_airflow в только что созданный run_generate_script.py и сохраняем изменения
 
-29) Через WEB-интерфейс AirFlow в разделе Admin Variables задаем переменные окружения
-
-- DATAPROC_IP 10.129.0.13
-- DATAPROC_PORT 22
-- KEY_FILE /home/dima/id_rsa
-- USERNAME ubuntu
-
 ## Настройка Hadoop-кластера (DataProc)
 
-30) Создать кластер Data Proc, выбрать группу безопасности, настроенную ранее, разрешить внешний IP, выбрать существующий сервисный аккаунт, внести ssh ключ локальной машины, выбрать бакет mlflowbucket, в качестве SSH ключей использовать открытые ключи ВМ с AirFlow и своего ПК;
+29) Создать кластер Data Proc, выбрать группу безопасности, настроенную ранее, разрешить внешний IP, выбрать существующий сервисный аккаунт, внести ssh ключ локальной машины, выбрать бакет mlflowbucket, в качестве SSH ключей использовать открытые ключи ВМ с AirFlow и своего ПК;
 
-31) Подключиться к мастерноде из консоли AirFlow можно по внутреннему IP адресу, можно по внешнему, если внешний ip был разрешен при создании кластера
+30) Подключиться к мастерноде из консоли AirFlow можно по внутреннему IP адресу, можно по внешнему, если внешний ip был разрешен при создании кластера
 
-		ssh ubuntu@10.129.0.33
+		ssh ubuntu@10.129.0.13Ы
 
-32) Установить и запустить tmux, чтобы сессия не прерывалась и разделить консоль
+31) Установить и запустить tmux, чтобы сессия не прерывалась и разделить консоль
 	
 		sudo apt install tmux
 		tmux
 
-33) Склонировать репозиторий, содержащий необходимые скрипты
+32) Склонировать репозиторий, содержащий необходимые скрипты
 
 		sudo apt update
 		sudo apt install git
 		git clone https://github.com/fds-git/MLOps.git
 
-34) Установить необходимые библиотеки (через sudo, иначе скрипт генерации run_generate_script.py не запустится на кластере так как не увидит numpy, pandas и т.д.)
+33) Установить необходимые библиотеки (через sudo, иначе скрипт генерации run_generate_script.py не запустится на кластере так как не увидит numpy, pandas и т.д.)
 
 		sudo apt install python3-pip
 		sudo pip install numpy
@@ -203,30 +196,30 @@
 		sudo pip install fastparquet
 		#sudo pip install findspark
 
-35) Создаем директорию в hdfs для сохранения данных, которые будут генерироваться
+34) Создаем директорию в hdfs для сохранения данных, которые будут генерироваться
 
 		hdfs dfs -mkdir /user/testdata
 		hdfs dfs -mkdir /user/processed_data
 
-36) Правим переменные окружения
+35) Правим переменные окружения
 
 		sudo nano /etc/environment
 
 		MLFLOW_S3_ENDPOINT_URL=https://storage.yandexcloud.net
 		MLFLOW_TRACKING_URI=http://10.129.0.30:8000 (внутренний адрес ВМ с MLFlow)
-		WORKPATH="/home/ubuntu/MLOps/airflow_dataproc_mlflow/for_dataproc/scripts"
+		WORKPATH="/home/ubuntu/MLOps/airflow_dataproc_mlflow_validation/for_dataproc/scripts"
 
-37) Создать файл:
+36) Создать файл:
 
 		mkdir ~/.aws
 		nano ~/.aws/credentials
 
-38) И добавить в него credentials для доступа к S3 (см. пункт 5)
+37) И добавить в него credentials для доступа к S3 (см. пункт 5)
 
 		aws_access_key_id = xxxx
 		aws_secret_access_key = yyyy
 
-39) Устанавливаем клиентскую часть mlflow (хотя можно conda не утсанавливать на клиенте)
+38) Устанавливаем клиентскую часть mlflow (хотя можно conda не утсанавливать на клиенте)
 		conda create -n mlflow_env
 		conda activate mlflow_env
 		conda install python
@@ -237,8 +230,14 @@
 		conda install -c anaconda ipykernel
 		python -m ipykernel install --user --name ex --display-name "Python (mlflow)"
 
-
 ## Завершение настройки и запуск всей системы
+
+39) Через WEB-интерфейс AirFlow в разделе Admin Variables задаем переменные окружения (внутренний адрес мастерноды Spark-кластера, адрес порта для SSH-соединения, расположение приватного ключа, имя пользователя, под которым будет быполняться подключение)
+
+- DATAPROC_IP 10.129.0.13
+- DATAPROC_PORT 22
+- KEY_FILE /home/dima/id_rsa
+- USERNAME ubuntu
 
 40) Запускаем переключателем DAG. Через некоторое время можем увидеть выполненные экземпляры DAG'a, внутри будут выполненные таски run_generate, в логах можно посмотреть результаты работы.
 
@@ -282,16 +281,20 @@
 47) Общие рекомендации
 
 - активно пользуемся tmux, в консоли должны быть следующие вкладки:
-1. - ВМ MLFlow (разбито на 2 части через tmux: запущенный mlflow server и командная строка ВМ MLFlow)
-2. - Мастернода DataProc (разбито на 2 части через tmux: запущенный jupyter notebook и командная строка мастерноды)
-3. - ВМ AirFlow (командная строка AirFlow)
-3. - локальная машина (разбито на 2 части через tmux: тоннель для juputer notebook и для web интерфейса MLFlow)
+1. - ВМ MLFlow (разбито на 2 части через tmux: запущенный mlflow server и командная строка ВМ MLFlow);
+2. - мастернода DataProc (разбито на 2 части через tmux: запущенный jupyter notebook и командная строка мастерноды);
+3. - ВМ AirFlow (командная строка AirFlow);
+3. - локальная машина (разбито на 2 части через tmux: тоннель для juputer notebook и для web интерфейса MLFlow).
 
 - в браузере следующие вкладки:
+1. - Spark Web-UI - для отслеживания статуса Spark-задач (доступ по ссылке через Yandex Cloud Data Proc);
+2. - Airflow Web-UI - для отслеживания выполнения DAG;
+3. - MLFlow Web-UI - для отслеживания метрик, параметров и артефактов экспериментов.
 
-- использовать mlflow.pyspark.ml.autolog для логирования всех промежуточных значений гиперпараметров при поиске гиперпараметров с помощью pyspark
-- использовать systemd для того, чтобы элементы продолжали работать и после отключения от локального компа
+- использовать mlflow.pyspark.ml.autolog для логирования всех промежуточных значений гиперпараметров если выполняем поиск гиперпараметров с помощью pyspark
 
 ## To Do
 
-48) Разобраться, как открывать веб интерфейс MLFlow, не открывая доступ к серверу со всего мира
+48) Разобраться, как через nginx задать пользователя и пароль для MLFlow: https://stackoverflow.com/questions/58956459/how-to-run-authentication-on-a-mlflow-server
+
+49) Разобраться как использовать systemd для автоматического перезапуска задач https://pedro-munoz.tech/how-to-setup-mlflow-in-production/
