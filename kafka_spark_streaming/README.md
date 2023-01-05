@@ -32,24 +32,30 @@
 
 		pip install kafka-python
 
-8) Запустить 1-й consumer
-
-		python3 kafka_consumer.py -g otus
-
-9) Запустить 2-й consumer
-
-		python3 kafka_consumer.py -g otus
-
-10) Запустить producer
-
-		python3 kafka_producer.py -n 100
 
 ## Настроить кластер Data Proc
 
-11) В качестве кластра использовать 
+8) В качестве кластра использовать 
+
+9) Склонировать репозиторий
+
+		git clone https://github.com/fds-git/MLOps.git
+
+10) Установить библиотеки
+
+		pip install kafka-python
 
 
+## Запуск скриптов
 
+11) Запустить client_consumer
 
+		python3 client_consumer.py -g otus
 
+12) Запустить server_consumer
 
+		python3 server_consumer.py -g otus
+
+13) Запустить client_producer
+
+		python3 kafka_producer.py -n 100

@@ -4,8 +4,6 @@
 import json
 from typing import Dict, NamedTuple
 import logging
-import random
-import datetime
 import argparse
 import pandas as pd
 
@@ -57,7 +55,7 @@ def main():
     try:
         #for i in range(args.n):
         dataframe = pd.read_parquet(args.data_name)
-        for index, row in dataframe.iterrows():
+        for _, row in dataframe.iterrows():
             data = row.to_dict()
             record_md = send_message(producer, args.topic, data)
             print(
@@ -70,7 +68,6 @@ def main():
 
 
 def send_message(producer: kafka.KafkaProducer, topic: str, data: Dict) -> RecordMetadata:
-    #click = generate_click()
     future = producer.send(
         topic=topic,
         key=str(data["hour"]).encode("ascii"),
@@ -84,14 +81,6 @@ def send_message(producer: kafka.KafkaProducer, topic: str, data: Dict) -> Recor
         partition=record_metadata.partition,
         offset=record_metadata.offset,
     )
-
-
-def generate_click() -> Dict:
-    return {
-        "ts": datetime.datetime.now().isoformat(),
-        "user_id": random.randint(0, MAX_USER_ID),
-        "page_id": random.randint(0, MAX_PAGE_ID),
-    }
 
 
 def serialize(msg: Dict) -> bytes:
