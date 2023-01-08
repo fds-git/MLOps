@@ -59,3 +59,21 @@
 13) Запустить client_producer
 
 		python3 kafka_producer.py -n 100
+
+
+Обязательно проверить версию SPARK и SCALA
+
+		spark-submit --version
+
+Если версии такие:
+
+SPARK 3.0.3
+Scala 2.12.10
+
+то запускаем приложение такой строкой
+
+spark-submit --jars mlflow-spark-1.27.0.jar --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.3 predict.py
+
+.option("partition.assignment.strategy", "range") \
+
+--jars mlflow-spark-1.27.0.jar
