@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+"""OTUS BigData ML kafka consumer example"""
+
+import json
+import argparse
+from typing import Dict, NamedTuple
+import kafka
+
+
+class RecordMetadata(NamedTuple):
+    topic: str
+    partition: int
+    offset: int
+
+
+def main():
+    argparser = argparse.ArgumentParser(description=__doc__)
+    argparser.add_argument(
+        "-g", "--group_id", required=True, help="kafka consumer group_id"
+    )
+    argparser.add_argument(
+        "-b",
+        "--bootstrap_server",
+        default="rc1b-gp5vr3anrc8k7fso.mdb.yandexcloud.net:9091",
+        help="kafka server address:port",
+    )
+    argparser.add_argument(
+        "-u", "--user", default="mlops", help="kafka user"
+    )
+    argparser.add_argument(
+        "-p", "--password", default="otus-mlops", help="kafka user password"
+    )
+    argparser.add_argument(
+        "-rt", "--receive_topic", default="features", help="kafka topic to features"
+    )
+    argparser.add_argument(
+        "-st", "--send_topic", default="predictions", help="kafka topic to predictions"
+    )
+
+    args = argparser.parse_args()
+
+    consumer = kafka.KafkaConsumer(
+        bootstrap_servers=args.bootstrap_server,
+        security_protocol="SASL_SSL",
+        sasl_mechanism="SCRAM-SHA-512",
+        sasl_plain_username=args.user,
+        sasl_plain_password=args.password,
+        ssl_cafile="YandexCA.crt",
+        group_id=args.group_id,
+        value_deserializer=json.loads,
+    )
+
+    consumer.subscribe(topics=[args.receive_topic])
+
+    producer = kafka.KafkaProducer(
+        bootstrap_servers=args.bootstrap_server,
+        security_protocol="SASL_SSL",
+        sasl_mechanism="SCRAM-SHA-512",
+        sasl_plain_username=args.user,
+        sasl_plain_password=args.password,
+        ssl_cafile="YandexCA.crt",
+        value_serializer=serialize,
+    )
+
+    print_new_messages(consumer, producer, args.send_topic)
+
+
+def print_new_messages(consumer, producer, send_topic):
+    count = 0
+    print("Waiting for a new messages. Press Ctrl+C to stop")
+    try:
+        for msg in consumer:
+            print(
+                f"{msg.topic}:{msg.partition}:{msg.offset}: key={msg.key} value={msg.value}"
+            )
+
+            record_md = send_message(producer, send_topic, msg.value)
+            print(
+                f"Msg sent. Topic: {record_md.topic}, partition:{record_md.partition}, offset:{record_md.offset}"
+            )
+            count += 1
+    except KeyboardInterrupt:
+        pass
+    print(f"Total {count} messages received")
+
+
+def send_message(producer: kafka.KafkaProducer, topic: str, data: Dict) -> RecordMetadata:
+    future = producer.send(
+        topic=topic,
+        key=str(data["hour"]).encode("ascii"),
+        value=data,
+    )
+
+    # Block for 'synchronous' sends
+    record_metadata = future.get(timeout=1)
+    return RecordMetadata(
+        topic=record_metadata.topic,
+        partition=record_metadata.partition,
+        offset=record_metadata.offset,
+    )
+
+
+def serialize(msg: Dict) -> bytes:
+    return json.dumps(msg).encode("utf-8")
+
+
+if __name__ == "__main__":
+    main()
